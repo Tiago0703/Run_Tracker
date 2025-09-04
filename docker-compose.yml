@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: runtracker
+      POSTGRES_PASSWORD: trackerpass
+      POSTGRES_DB: runtrackerdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend/RunTracker.Api
+    environment:
+      - ConnectionStrings__Default=Host=db;Port=5432;Database=runtrackerdb;Username=runtracker;Password=trackerpass
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+
+  mobile:
+    build: ./mobile
+    ports:
+      - "19000:19000"
+
+volumes:
+  db_data:
